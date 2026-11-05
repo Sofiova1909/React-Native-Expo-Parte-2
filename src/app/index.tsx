@@ -1,29 +1,48 @@
 
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 export default function App() {
   const [contador, setContador] = useState(0);
-  const [registros, setRegistros] = useState<
-  { id: string; numero: number; hora: string }[]>([]);
 
+  const [registros, setRegistros] = useState<
+    { id: string; numero: number; hora: string }[]
+  >([]);
+
+  // Incrementar contador
   const incrementarContador = () => {
     const nuevoContador = contador + 1;
     const ahora = new Date();
     const horaFormateada = ahora.toLocaleTimeString();
 
-    // Actualizamos el contador
     setContador(nuevoContador);
 
-    // Creamos el nuevo registro
     const nuevoRegistro = {
       id: Date.now().toString(),
       numero: nuevoContador,
       hora: horaFormateada,
     };
 
-    // Guardamos el registro
-    setRegistros([nuevoRegistro, ...registros]);
+    setRegistros(actuales => [nuevoRegistro, ...actuales]);
+  };
+
+  // Reto 1: Restar un like
+  const restarContador = () => {
+    if (contador > 0) {
+      setContador(contador - 1);
+    }
+  };
+
+  // Reto 1: Reiniciar contador e historial
+  const reiniciarContador = () => {
+    setContador(0);
+    setRegistros([]);
   };
 
   return (
@@ -39,22 +58,62 @@ export default function App() {
           hora exacta del evento en la tabla.
         </Text>
 
-        <Text style={estilos.counterBox}>{contador}</Text>
+        {/* Reto 2: Cambiar el color al superar 10 likes */}
+        <Text
+          style={[
+            estilos.counterBox,
+            contador > 10 && estilos.contadorAlto,
+          ]}
+        >
+          {contador}
+        </Text>
 
+        {/* Botón incrementar */}
         <TouchableOpacity
           style={estilos.btnClick}
           onPress={incrementarContador}
         >
-          <Text style={estilos.btnText}>¡Haz Clic Aquí!</Text>
+          <Text style={estilos.btnText}>
+            ¡Haz Clic Aquí!
+          </Text>
         </TouchableOpacity>
 
+        {/* Reto 1: Botón restar */}
+        <TouchableOpacity
+          style={estilos.btnRestar}
+          onPress={restarContador}
+        >
+          <Text style={estilos.btnText}>
+            Restar Like
+          </Text>
+        </TouchableOpacity>
+
+        {/* Reto 1: Botón reiniciar */}
+        <TouchableOpacity
+          style={estilos.btnReiniciar}
+          onPress={reiniciarContador}
+        >
+          <Text style={estilos.btnText}>
+            Reiniciar
+          </Text>
+        </TouchableOpacity>
+
+        {/* Tabla de registros */}
         <View style={estilos.tableContainer}>
           <View style={estilos.tableHeader}>
-            <Text style={[estilos.th, estilos.cellNumero]}>Nº Clic</Text>
-            <Text style={[estilos.th, estilos.cellHora]}>Hora</Text>
+            <Text style={[estilos.th, estilos.cellNumero]}>
+              Nº Clic
+            </Text>
+
+            <Text style={[estilos.th, estilos.cellHora]}>
+              Hora
+            </Text>
           </View>
 
-          <ScrollView  style={estilos.tableBody}>
+          <ScrollView
+            style={estilos.tableBody}
+            showsVerticalScrollIndicator={false}
+          >
             {registros.map((item, index) => (
               <View
                 key={item.id}
@@ -66,6 +125,7 @@ export default function App() {
                 <Text style={[estilos.td, estilos.cellNumero]}>
                   {item.numero}
                 </Text>
+
                 <Text style={[estilos.td, estilos.cellHora]}>
                   {item.hora}
                 </Text>
@@ -124,6 +184,11 @@ const estilos = StyleSheet.create({
     marginVertical: 10,
   },
 
+  // Reto 2: Color rojo al superar 10 likes
+  contadorAlto: {
+    color: '#dc3545',
+  },
+
   btnClick: {
     backgroundColor: '#2ecc71',
     paddingVertical: 12,
@@ -135,6 +200,28 @@ const estilos = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 3,
+    marginBottom: 10,
+    width: '100%',
+  },
+
+  // Reto 1: Estilo del botón restar
+  btnRestar: {
+    backgroundColor: '#dc3545',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginBottom: 10,
+    width: '100%',
+  },
+
+  // Reto 1: Estilo del botón reiniciar
+  btnReiniciar: {
+    backgroundColor: '#6c757d',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 6,
+    alignItems: 'center',
     marginBottom: 20,
     width: '100%',
   },
